@@ -1,0 +1,8 @@
+.vscode/settings.json
+core/__pycache__/__init__.cpython-312.pyc
+core/__pycache__/analizador_grafo.cpython-312.pyc
+core/__pycache__/validador.cpython-312.pyc
+gui/__pycache__/__init__.cpython-312.pyc
+gui/__pycache__/lienzo_grafo.cpython-312.pyc
+gui/__pycache__/tabla_matriz.cpython-312.pyc
+gui/__pycache__/ventana_principal.cpython-312.pyc
