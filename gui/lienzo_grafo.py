@@ -63,7 +63,7 @@ class LienzoGrafo(FigureCanvasQTAgg):
         nx.draw_networkx_edges(
             grafo,
             posicion_nodos,
-            edgeList=aristas_normales,
+            edgelist=aristas_normales,
             ax=self.ejes,
             edge_color="#7F8C8D",
             width=1.5,
@@ -77,7 +77,7 @@ class LienzoGrafo(FigureCanvasQTAgg):
             nx.draw_networkx_edges(
                 grafo,
                 posicion_nodos,
-                edgeList=aristas_camino,
+                edgelist=aristas_camino,
                 ax=self.ejes,
                 edge_color="#E74C3C",
                 width=3.5,

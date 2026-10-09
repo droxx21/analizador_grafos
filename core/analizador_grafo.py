@@ -104,7 +104,7 @@ class AnalizadorGrafo:
                     menor_costo = costos[nodo]
 
             # No quedan nodos alcanzables
-            if nodo_actual == nodo_destino:
+            if nodo_actual is None or nodo_actual == nodo_destino:
                 break
 
             visitados.add(nodo_actual)
@@ -122,21 +122,21 @@ class AnalizadorGrafo:
                     costos[vecino] = nuevo_costo
                     predecesores[vecino] = nodo_actual
 
-            # Si el destino sigue siendo inalcanzable
-            if costos[nodo_destino] == float("inf"):
-                return [], float("inf")
+        # Si el destino sigue siendo inalcanzable
+        if costos[nodo_destino] == float("inf"):
+            return [], float("inf")
 
-            # Reconstruir el camino desde el destino
-            camino = []
-            nodo = nodo_destino
+        # Reconstruir el camino desde el destino
+        camino = []
+        nodo = nodo_destino
 
-            while nodo is not None:
-                camino.append(nodo)
-                nodo = predecesores[nodo]
+        while nodo is not None:
+            camino.append(nodo)
+            nodo = predecesores[nodo]
 
-            camino.reverse()
+        camino.reverse()
 
-            return camino, costos[nodo_destino]
+        return camino, costos[nodo_destino]
 
     def calcular_bellman_ford(self, nodo_origen: str, nodo_destino: str) -> tuple[list[str], float]:
 
