@@ -73,4 +73,136 @@ class AnalizadorGrafo:
             return list(nx.simple_cycles(self.grafo))
         else:
             return nx.cycle_basis(self.grafo)
+
+    def calcular_dijkstra(self, nodo_origen: str, nodo_destino: str) -> tuple[list[str], float]:
+        """Calcula la ruta más corta usando el algoritmo de Dijkstra."""
+
+        # Verificar que existan los nodos
+        if (nodo_origen not in self.grafo or nodo_destino not in self.grafo):
+            return [], float("inf")
+
+        # Dijkstra no admite pesos negativos
+        for _, _, datos in self.grafo.edges(data=True):
+            if datos.get("weight", 1) < 0:
+                raise ValueError("Dijkstra no admite pesos negativos.")
+
+        # Inicializar los costos y los predecesores 
+        costos = { nodo: float("inf") for nodo in self.grafo.nodes }
+        predecesores = {nodo: None for nodo in self.grafo.nodes}
+        visitados = set()
+        costos[nodo_origen] = 0
+
+        while len(visitados) < len(costos):
+
+            # Buscar manualmente el nodo no visitado con menor costo acumulado
+            nodo_actual = None
+            menor_costo = float("inf")
+
+            for nodo in costos:
+                if (nodo not in visitados and costos[nodo] < menor_costo): 
+                    nodo_actual = nodo
+                    menor_costo = costos[nodo]
+
+            # No quedan nodos alcanzables
+            if nodo_actual == nodo_destino:
+                break
+
+            visitados.add(nodo_actual)
+
+            # Examinar las aristas que salen del nodo actual
+            for vecino, datos in self.grafo[nodo_actual].items():
+                if vecino in visitados:
+                    continue
+
+                peso = datos.get("weight", 1)
+                nuevo_costo = costos[nodo_actual] + peso
+
+                # Relajación: mejorar el costo conocido
+                if nuevo_costo < costos[vecino]:
+                    costos[vecino] = nuevo_costo
+                    predecesores[vecino] = nodo_actual
+
+            # Si el destino sigue siendo inalcanzable
+            if costos[nodo_destino] == float("inf"):
+                return [], float("inf")
+
+            # Reconstruir el camino desde el destino
+            camino = []
+            nodo = nodo_destino
+
+            while nodo is not None:
+                camino.append(nodo)
+                nodo = predecesores[nodo]
+
+            camino.reverse()
+
+            return camino, costos[nodo_destino]
+
+    def calcular_bellman_ford(self, nodo_origen: str, nodo_destino: str) -> tuple[list[str], float]:
+
+        if (nodo_origen not in self.grafo or nodo_destino not in self.grafo):
+            return [], float("inf")
+
+        nodos = list(self.grafo.nodes)
+        aristas = []
+
+        # Convertir las aristas del grafo a una lista
+        for origen, destino, datos in self.grafo.edges(data=True):
+            peso = datos.get("weight", 1)
+
+            aristas.append((origen, destino, peso))
+
+            # En grafos no dirigidos, se puede recorrer
+            # la arista en ambas direcciones.
+            if not self.grafo.is_directed():
+                aristas.append((destino, origen, peso))
+
+        costos = { nodo: float("inf") for nodo in nodos }
+        predecesores = {nodo: None for nodo in nodos}
+        costos[nodo_origen] = 0
+
+        # Relajar todas las aristas V - 1 veces
+        for _ in range(len(nodos) - 1):
+            hubo_cambios = False
+
+            for origen, destino, peso in aristas:
+                if costos[origen] == float("inf"):
+                    continue
+
+                nuevo_costo = costos[origen] + peso
+
+                if nuevo_costo < costos[destino]:
+                    costos[destino] = nuevo_costo
+                    predecesores[destino] = origen
+                    hubo_cambios = True
+
+            # Si no hubo cambios, ya no es necesario continuar
+            if not hubo_cambios:
+                break
+
+        # Detectar ciclos negativos alcanzables desde el origen
+        for origen, destino, peso in aristas:
+            if costos[origen] == float("inf"):
+                continue
+
+            if costos[origen] + peso < costos[destino]:
+                raise ValueError(
+                    "Existe un ciclo de peso negativo "
+                    "alcanzable desde el origen."
+                )
+
+        if costos[nodo_destino] == float("inf"):
+            return [], float("inf")
+
+        # Reconstruir la ruta
+        camino = []
+        nodo = nodo_destino
+
+        while nodo is not None:
+            camino.append(nodo)
+            nodo = predecesores[nodo]
+
+        camino.reverse()
+
+        return camino, costos[nodo_destino]
                                  

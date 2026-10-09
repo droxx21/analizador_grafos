@@ -109,7 +109,7 @@ class VentanaPrincipal(QMainWindow):
 
         texto_reporte = f"--- TIPO DE GRAFO ---\n{rep_mat['tipo']}\n\n"
         texto_reporte += f"--- REPRESENTACIÓN MATEMÁTICA ---\n"
-        texto_reporte += f"Vérteces (V) = {rep_mat['vertices']}\n"
+        texto_reporte += f"Vértices (V) = {rep_mat['vertices']}\n"
         texto_reporte += f"Aristas (E)  = {rep_mat['aristas']}\n\n"
 
         texto_reporte += "--- EVIDENCIA: NODOS ADYACENTES ---\n"
